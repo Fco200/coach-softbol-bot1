@@ -66,10 +66,16 @@ bot.on("text", async (ctx) => {
     });
 
     const answer = response.output_text || "No pude generar respuesta. Intenta escribir la jugada con mas datos.";
-    await ctx.reply(answer);
-  } catch (error) {
-    console.error(error);
-    await ctx.reply("Tuve un error al consultar la IA. Revisa que OPENAI_API_KEY este bien configurada en Render.");
+    await ctx.reply(answer)} catch (error) {
+  console.error("OPENAI ERROR STATUS:", error.status);
+  console.error("OPENAI ERROR MESSAGE:", error.message);
+  console.error("OPENAI ERROR CODE:", error.code);
+  console.error("OPENAI ERROR TYPE:", error.type);
+
+  await ctx.reply("Tuve un error al consultar la IA. Revisa los logs de Render para ver si es key, saldo, modelo o limite de uso.");
+}
+  
+    Render.");
   }
 });
 
