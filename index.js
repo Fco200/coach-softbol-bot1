@@ -1,5 +1,5 @@
 const express = require("express");
-const TelegramBot = require("node-telegram-bot-api");
+const { Telegraf } = require("telegraf");
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const app = express();
@@ -9,21 +9,47 @@ if (!token) {
   throw new Error("Falta TELEGRAM_BOT_TOKEN");
 }
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new Telegraf(token);
 
-const menu = `Bienvenido a Coach Softbol Beisbol.\n\nTe ayudo con dudas de beisbol, softbol fast pitch y slow pitch para jugadores, coaches, ampayers, anotadores y ligas.\n\nPara resolver bien tu duda, dime:\n\n1. Modalidad: beisbol, fast pitch o slow pitch\n2. Tu rol: ampayer, coach, jugador, anotador u organizador\n3. Tipo de duda: regla, mecanica, lineup, protesta, anotacion o jugada\n4. Si es jugada: outs, corredores, conteo y que paso`; 
+const menu = `Bienvenido a Coach Softbol Beisbol.
 
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, menu);
+Te ayudo con dudas de beisbol, softbol fast pitch y slow pitch para jugadores, coaches, ampayers, anotadores y ligas.
+
+Para resolver bien tu duda, dime:
+
+1. Modalidad: beisbol, fast pitch o slow pitch
+2. Tu rol: ampayer, coach, jugador, anotador u organizador
+3. Tipo de duda: regla, mecanica, lineup, protesta, anotacion o jugada
+4. Si es jugada: outs, corredores, conteo y que paso`;
+
+bot.start((ctx) => {
+  ctx.reply(menu);
 });
 
-bot.on("message", (msg) => {
-  if (!msg.text || msg.text.startsWith("/start")) return;
+bot.on("text", (ctx) => {
+  const text = ctx.message.text;
+  if (text === "/start") return;
 
-  const respuesta = `Para ayudarte bien, necesito ordenar la informacion:\n\n1. ¿Es beisbol, softbol fast pitch o slow pitch?\n2. ¿Preguntas como ampayer, coach, jugador, anotador u organizador?\n3. ¿Cuantos outs habia?\n4. ¿Que corredores estaban en base?\n5. ¿Que paso exactamente en la jugada?\n6. ¿Tu liga usa reglamento WBSC, USA Softball, MLB o regla local?\n\nCon esos datos te doy:\n- resumen de la jugada\n- criterio aplicable\n- decision probable\n- mecanica sugerida para el ampayer\n- como explicarlo a coaches o managers`;
+  const respuesta = `Para ayudarte bien, necesito ordenar la informacion:
 
-  bot.sendMessage(msg.chat.id, respuesta);
+1. ¿Es beisbol, softbol fast pitch o slow pitch?
+2. ¿Preguntas como ampayer, coach, jugador, anotador u organizador?
+3. ¿Cuantos outs habia?
+4. ¿Que corredores estaban en base?
+5. ¿Que paso exactamente en la jugada?
+6. ¿Tu liga usa reglamento WBSC, USA Softball, MLB o regla local?
+
+Con esos datos te doy:
+- resumen de la jugada
+- criterio aplicable
+- decision probable
+- mecanica sugerida para el ampayer
+- como explicarlo a coaches o managers`;
+
+  ctx.reply(respuesta);
 });
+
+bot.launch();
 
 app.get("/", (req, res) => {
   res.send("Coach Softbol Beisbol bot activo");
@@ -32,3 +58,6 @@ app.get("/", (req, res) => {
 app.listen(port, "0.0.0.0", () => {
   console.log(`Servidor activo en puerto ${port}`);
 });
+
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
