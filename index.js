@@ -58,7 +58,7 @@ bot.on("text", async (ctx) => {
     await ctx.reply("Estoy revisando la jugada...");
 
     const response = await openai.responses.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-4o-mini",
       input: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userText }
