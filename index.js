@@ -54,7 +54,7 @@ bot.on("text", async (ctx) => {
     await ctx.reply("Estoy revisando la jugada...");
 
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
       contents: `${systemPrompt}\n\nPregunta del usuario:\n${userText}`
     });
 
